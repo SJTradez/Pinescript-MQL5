@@ -1,0 +1,83 @@
+//TimeFrames and Price Data 
+tf = input.timeframe(title='Resolution', defval='15') 
+tf1 = input.timeframe(title='Resolution', defval='60') 
+tf2 = input.timeframe(title='Resolution', defval='D') 
+tf3 = input.timeframe(title='Resolution', defval='W') 
+low_ = request.security(syminfo.tickerid, tf, low)
+open_ = request.security(syminfo.tickerid, tf, open)
+high_ = request.security(syminfo.tickerid, tf, high)
+close_ = request.security(syminfo.tickerid, tf, close)
+low_1 = request.security(syminfo.tickerid, tf1, low)
+open_1 = request.security(syminfo.tickerid, tf1, open)
+high_1= request.security(syminfo.tickerid, tf1, high)
+close_1 = request.security(syminfo.tickerid, tf1, close)
+low_2 = request.security(syminfo.tickerid, tf2, low)
+open_2 = request.security(syminfo.tickerid, tf2, open)
+high_2 = request.security(syminfo.tickerid, tf2, high)
+close_2 = request.security(syminfo.tickerid, tf2, close)
+low_3 = request.security(syminfo.tickerid, tf3, low)
+open_3 = request.security(syminfo.tickerid, tf3, open)
+high_3 = request.security(syminfo.tickerid, tf3, high)
+close_3 = request.security(syminfo.tickerid, tf3, close)
+
+// Detect Large Move in Price
+L_price_move = ((high_ - low_) / open_) * 100
+S_price_move = ((high_ - low_) / open_) * 100
+L_price_move1 = ((high_1 - low_1) / open_) * 100
+S_price_move1 = ((high_1 - low_1) / open_) * 100
+L_price_move2 = ((high_2 - low_2) / open_) * 100
+S_price_move2 = ((high_2 - low_2) / open_) * 100
+L_price_move3 = ((high_3 - low_3) / open_) * 100
+S_price_move3 = ((high_3 - low_3) / open_) * 100
+
+//Thresholds for price movement to draw levels 
+move_thresh = input.float(title='15 Min Move Thresold %', defval=0.5, minval=0, maxval=5, step = 0.05)
+largeMoveup = L_price_move > move_thresh
+largeMovedown = S_price_move > move_thresh
+move_thresh1= input.float(title='1 HR Move Thresold %', defval=1, minval=0, maxval=25, step = 0.1)
+largeMoveup1 = L_price_move1 > move_thresh1
+largeMovedown1 = S_price_move1 > move_thresh1
+move_thresh2= input.float(title='D Move Thresold %', defval=2.5, minval=0, maxval=25, step = 0.25)
+largeMoveup2 = L_price_move2 > move_thresh2
+largeMovedown2 = S_price_move2 > move_thresh2
+move_thresh3= input.float(title='W Move Thresold %', defval=5, minval=0, maxval=25, step = 0.25)
+largeMoveup3 = L_price_move3 > move_thresh3
+largeMovedown3 = S_price_move3 > move_thresh3
+
+//Draw levels 
+low__ = ta.valuewhen(largeMoveup,      low_,    0)
+open__ = ta.valuewhen(largeMoveup,      open_,    0)
+high__ = ta.valuewhen(largeMovedown,      high_,    0)
+low__1 = ta.valuewhen(largeMoveup1,      low_1,    0)
+open__1 = ta.valuewhen(largeMoveup1,      open_1,    0)
+high__1 = ta.valuewhen(largeMovedown1,      high_1,    0)
+low__2 = ta.valuewhen(largeMoveup2,      low_2,    0)
+open__2 = ta.valuewhen(largeMoveup2,      open_2,    0)
+high__2 = ta.valuewhen(largeMovedown2,      high_2,    0)
+low__3 = ta.valuewhen(largeMoveup3,      low_3,    0)
+open__3 = ta.valuewhen(largeMoveup3,      open_3,    0)
+high__3= ta.valuewhen(largeMovedown3,      high_3,    0)
+
+//Plot TFs 
+plot(low__, color=color.new(color.green, 0), style=plot.style_circles, linewidth=1)
+plot(high__, color=color.new(color.green, 0), style=plot.style_circles, linewidth=1)
+plot(low__1, color=color.new(color.yellow, 0), style=plot.style_circles, linewidth=1)
+plot(high__1, color=color.new(color.yellow, 0), style=plot.style_circles, linewidth=1)
+plot(low__2, color=color.new(color.orange, 0), style=plot.style_circles, linewidth=1)
+plot(high__2, color=color.new(color.orange, 0), style=plot.style_circles, linewidth=1)
+plot(low__3, color=color.new(color.red, 0), style=plot.style_circles, linewidth=1)
+plot(high__3, color=color.new(color.red, 0), style=plot.style_circles, linewidth=1)
+
+//Plot MA
+fastMALen = input(title='Fast SMA Length', defval=10)
+slowMALen = input(title='Slow SMA Length', defval=50)
+fastMA = ta.sma(close, fastMALen)
+slowMA = ta.sma(close, slowMALen)
+plot(series=fastMA, color=color.new(color.purple, 0), linewidth=2, title='Fast SMA')
+plot(series=slowMA, color=color.new(color.white, 0), linewidth=2, title='Slow SMA')
+
+//Enable/Disable
+_15min = input.bool(defval = true, title = "15 min enabled")
+_60min = input.bool(defval = true, title = "60 min enabled")
+_D = input.bool(defval = true, title = "D enabled")
+_W = input.bool(defval = true, title = "W min enabled")
